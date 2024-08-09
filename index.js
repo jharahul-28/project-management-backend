@@ -6,6 +6,7 @@ import errorHandler from "./middleware/errorHandler.js";
 import userRoutes from "./routes/user.routes.js";
 import taskRoutes from "./routes/task.routes.js";
 import projectRoutes from "./routes/project.routes.js";
+import cors from "cors";
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(errorHandler);
+app.use(cors());
 
 app.use("/api/user", userRoutes);
 app.use("/api/tasks", taskRoutes);

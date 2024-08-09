@@ -58,6 +58,7 @@ export const registerUser = async (req, res) => {
         status: "201",
         message: "User registered successfully",
         registeredUser,
+        acessToken: token,
         Timestamp: new Date().toISOString(),
       });
   } catch (error) {
@@ -124,8 +125,8 @@ export const loginUser = async (req, res) => {
       .json({
         status: "201",
         message: "Login Successful!!",
-        Timestamp: new Date().toISOString(),
-        token,
+        accessToken: token,
+        Timestamp: new Date().toISOString()
       });
   } catch (error) {
     return res

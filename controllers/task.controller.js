@@ -1,9 +1,33 @@
 import Task from '../models/task.model.js';
+import User from '../models/user.model.js';
+import Project from '../models/project.model.js';
 
 export const createTask = async (req, res) => {
     const { title, description, status, assignee, project } = req.body;
     try {
-        const newTask = new Task({ title, description, status, assignee, project });
+        const user = await User.findOne({ username: assignee });
+        if (!user) {
+            return res.status(404).json({
+                status: "404",
+                message: "Assignee not found",
+                Timestamp: new Date().toISOString(),
+            });
+        }
+        const proj = await Project.findOne({ name: project });
+        if (!proj) {
+            return res.status(404).json({
+                status: "404",
+                message: "Project not found",
+                Timestamp: new Date().toISOString(),
+            });
+        }
+        const newTask = new Task({
+            title,
+            description,
+            status,
+            assignee: user._id,
+            project: proj._id,
+        });
         await newTask.save();
         res.status(201).json({
             status: "201",

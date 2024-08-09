@@ -1,21 +1,35 @@
 import Project from '../models/project.model.js';
+import User from '../models/user.model.js';
 
 export const createProject = async (req, res) => {
     const { name, description, deadline, participants } = req.body;
     try {
-        const newProject = new Project({ name, description, deadline, participants });
+        const userIds = await Promise.all(participants.map(async username => {
+            const user = await User.findOne({ username });
+            if (!user) {
+                throw new Error(`User with username ${username} not found`);
+            }
+            return user._id;
+        }));
+        const newProject = new Project({
+            name,
+            description,
+            deadline,
+            participants: userIds,
+        });
+
         await newProject.save();
         res.status(201).json({
             status: "201",
             newProject: newProject,
-            Timestamp: new Date().toISOString()
+            Timestamp: new Date().toISOString(),
         });
     } catch (error) {
-        res.status(500).json({ 
+        res.status(500).json({
             status: "500",
-            message: "Server Error", 
+            message: error.message.includes('not found') ? error.message : "Server Error",
             error: error.message,
-            Timestamp: new Date().toISOString()
+            Timestamp: new Date().toISOString(),
         });
     }
 };

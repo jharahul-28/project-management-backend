@@ -210,16 +210,21 @@ export const getAdminOverview = async (req, res) => {
     const tasks = await Task.find().exec();
 
     const overview = {
-      projects,
-      users,
-      tasks,
+      projects: projects,
+      users: users,
+      tasks: tasks,
     };
 
     return res.status(201).json(overview);
   } catch (error) {
     return res
       .status(500)
-      .json({status: "500", message: "Server Error", error: error.message, Timestamp: new Date.toISOString()});
+      .json({
+        status: "500", 
+        message: "Server Error", 
+        error: error.message, 
+        Timestamp: new Date.toISOString()
+      });
   }
 };
 
@@ -230,9 +235,17 @@ export const getTeamLeadTasks = async (req, res) => {
     const tasks = await Task.find({
       project: { $in: projects.map((p) => p._id) },
     }).exec();
-    res.json(tasks);
+    res.json({
+      status: "201",
+      tasks: tasks,
+      Timestamp: new Date.toISOString()
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(500).json({ 
+      status: "500",
+      message: "Server Error", 
+      error: error.message 
+    });
   }
 };
 
@@ -241,7 +254,11 @@ export const addNewTask = async (req, res) => {
     const { title, description, status, assignee, project } = req.body;
     const user = await User.findOne({ username: assignee });
     if (!user) {
-      return res.status(404).json({ message: "Assignee user not found" , Timestamp: new Date().toISOString()});
+      return res.status(404).json({ 
+        status: "400",
+        message: "Assignee user not found" , 
+        Timestamp: new Date().toISOString()
+      });
     }
     const newTask = new Task({
       title,
@@ -251,8 +268,17 @@ export const addNewTask = async (req, res) => {
       project,
     });
     await newTask.save();
-    res.status(201).json({status: "201",newTask, Timestamp: new Date().toISOString()});
+    res.status(201).json({
+      status: "201",
+      newTask: newTask, 
+      Timestamp: new Date().toISOString()
+    });
   } catch (error) {
-    res.status(500).json({ status: "500", message: "Server Error", error: error.message, Timestamp: new Date().toISOString()});
+    res.status(500).json({ 
+      status: "500", 
+      message: "Server Error", 
+      error: error.message, 
+      Timestamp: new Date().toISOString()
+    });
   }
 };
